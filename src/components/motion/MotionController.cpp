@@ -39,6 +39,18 @@ bool MotionController::ShouldWakeUp(bool isSleeping) {
   }
   return false;
 }
+bool MotionController::ShouldSleep() {
+  bool ret = false;
+
+  if (y >= lastYForSleep + 192) {
+    ret = true;
+  }
+
+  lastYForSleep = (y > 320) ? y : 320;
+
+  return ret;
+}
+
 void MotionController::IsSensorOk(bool isOk) {
   isSensorOk = isOk;
 }
