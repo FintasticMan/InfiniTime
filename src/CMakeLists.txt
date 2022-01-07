@@ -443,6 +443,8 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingWatchFace.cpp
         displayapp/screens/settings/SettingTimeFormat.cpp
         displayapp/screens/settings/SettingWakeUp.cpp
+        displayapp/screens/settings/SettingWakeUpTap.cpp
+        displayapp/screens/settings/SettingWakeUpWrist.cpp
         displayapp/screens/settings/SettingDisplay.cpp
         displayapp/screens/settings/SettingSteps.cpp
         displayapp/screens/settings/SettingSetDate.cpp

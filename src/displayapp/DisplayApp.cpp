@@ -43,6 +43,8 @@
 #include "displayapp/screens/settings/SettingWatchFace.h"
 #include "displayapp/screens/settings/SettingTimeFormat.h"
 #include "displayapp/screens/settings/SettingWakeUp.h"
+#include "displayapp/screens/settings/SettingWakeUpTap.h"
+#include "displayapp/screens/settings/SettingWakeUpWrist.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
 #include "displayapp/screens/settings/SettingSetDate.h"
@@ -403,6 +405,14 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
     case Apps::SettingWakeUp:
       currentScreen = std::make_unique<Screens::SettingWakeUp>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingWakeUpTap:
+      currentScreen = std::make_unique<Screens::SettingWakeUpTap>(this, settingsController);
+      ReturnApp(Apps::SettingWakeUp, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingWakeUpWrist:
+      currentScreen = std::make_unique<Screens::SettingWakeUpWrist>(this, settingsController);
+      ReturnApp(Apps::SettingWakeUp, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingDisplay:
       currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);

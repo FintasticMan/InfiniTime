@@ -33,6 +33,8 @@ namespace Pinetime {
       SettingTimeFormat,
       SettingDisplay,
       SettingWakeUp,
+      SettingWakeUpTap,
+      SettingWakeUpWrist,
       SettingSteps,
       SettingSetDate,
       SettingSetTime,
