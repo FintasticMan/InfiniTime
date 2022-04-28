@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <array>
 #include <drivers/Bma421.h>
 #include <components/ble/MotionService.h>
 
@@ -24,9 +25,6 @@ namespace Pinetime {
       }
       int16_t Z() const {
         return z;
-      }
-      int16_t LastY() const {
-        return lastY;
       }
       uint32_t NbSteps() const {
         return nbSteps;
@@ -61,7 +59,8 @@ namespace Pinetime {
       int16_t x = 0;
       int16_t y = 0;
       int16_t z = 0;
-      int16_t lastY = 0;
+      std::array<int16_t, 8> lastYs = {};
+      uint8_t lastYIndex = 0;
       int16_t lastYForWakeUp = 0;
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
