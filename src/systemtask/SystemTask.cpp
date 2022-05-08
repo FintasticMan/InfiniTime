@@ -503,7 +503,7 @@ void SystemTask::UpdateMotion() {
       motionController.Should_ShakeWake(settingsController.GetShakeThreshold())) {
     GoToRunning();
   }
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::LowerWrist) && !isSleeping &&
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::LowerWrist) && state == SystemTaskState::Running &&
       motionController.ShouldLowerSleep()) {
     PushMessage(Messages::GoToSleep);
   }
