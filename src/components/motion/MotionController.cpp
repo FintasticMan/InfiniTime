@@ -7,15 +7,14 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
     service->OnNewStepCountValue(nbSteps);
   }
 
-  if (service != nullptr && (this->x != x || this->y != y || this->z != z)) {
+  if (service != nullptr && (this->x != x || lastYs[lastYIndex] != y || this->z != z)) {
     service->OnNewMotionValues(x, y, z);
   }
 
   lastYIndex++;
   lastYIndex %= lastYs.size();
-  lastYs.at(lastYIndex) = this->y;
+  lastYs[lastYIndex] = y;
   this->x = x;
-  this->y = y;
   this->z = z;
   int32_t deltaSteps = nbSteps - this->nbSteps;
   this->nbSteps = nbSteps;
@@ -27,7 +26,7 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
 bool MotionController::Should_RaiseWake(bool isSleeping) {
   if ((x + 335) <= 670 && z < 0) {
     if (not isSleeping) {
-      if (y <= 0) {
+      if (lastYs[lastYIndex] <= 0) {
         return false;
       } else {
         lastYForWakeUp = 0;
@@ -35,12 +34,12 @@ bool MotionController::Should_RaiseWake(bool isSleeping) {
       }
     }
 
-    if (y >= 0) {
+    if (lastYs[lastYIndex] >= 0) {
       lastYForWakeUp = 0;
       return false;
     }
-    if (y + 230 < lastYForWakeUp) {
-      lastYForWakeUp = y;
+    if (lastYs[lastYIndex] + 230 < lastYForWakeUp) {
+      lastYForWakeUp = lastYs[lastYIndex];
       return true;
     }
   }
@@ -52,7 +51,7 @@ bool MotionController::Should_ShakeWake(uint16_t thresh) {
   auto diff = xTaskGetTickCount() - lastShakeTime;
   lastShakeTime = xTaskGetTickCount();
   /* Currently Polling at 10hz, If this ever goes faster scalar and EMA might need adjusting */
-  int32_t speed = std::abs(z + (y / 2) + (x / 4) - lastYForShake - lastZForShake) / diff * 100;
+  int32_t speed = std::abs(z + (lastYs[lastYIndex] / 2) + (x / 4) - lastYForShake - lastZForShake) / diff * 100;
   //(.2 * speed) + ((1 - .2) * accumulatedspeed);
   // implemented without floats as .25Alpha
   accumulatedspeed = (speed / 5) + ((accumulatedspeed / 5) * 4);
@@ -61,7 +60,7 @@ bool MotionController::Should_ShakeWake(uint16_t thresh) {
     wake = true;
   }
   lastXForShake = x / 4;
-  lastYForShake = y / 2;
+  lastYForShake = lastYs[lastYIndex] / 2;
   lastZForShake = z;
   return wake;
 }
@@ -70,13 +69,13 @@ int32_t MotionController::currentShakeSpeed() {
 }
 
 bool MotionController::ShouldLowerSleep() const {
-  if (lastYs.at((lastYIndex + 2) % lastYs.size()) < lastYs.at((lastYIndex + 1) % lastYs.size()) + 192 ||
-      lastYs.at((lastYIndex + 2) % lastYs.size()) < 512) {
+  if (lastYs[(lastYIndex + 2) % lastYs.size()] < lastYs[(lastYIndex + 1) % lastYs.size()] + 192 ||
+      lastYs[(lastYIndex + 2) % lastYs.size()] < 512) {
     return false;
   }
 
   for (uint8_t i = 3; i < lastYs.size(); i++) {
-    if (lastYs.at((lastYIndex + i) % lastYs.size()) < 0) {
+    if (lastYs[(lastYIndex + i) % lastYs.size()] < 0) {
       return false;
     }
   }

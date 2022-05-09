@@ -21,7 +21,7 @@ namespace Pinetime {
         return x;
       }
       int16_t Y() const {
-        return y;
+        return lastYs[lastYIndex];
       }
       int16_t Z() const {
         return z;
@@ -57,7 +57,6 @@ namespace Pinetime {
       uint32_t nbSteps;
       uint32_t currentTripSteps = 0;
       int16_t x = 0;
-      int16_t y = 0;
       int16_t z = 0;
       std::array<int16_t, 8> lastYs = {};
       uint8_t lastYIndex = 0;
