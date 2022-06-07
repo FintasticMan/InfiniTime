@@ -154,7 +154,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         heartRateController,
                                         displayApp,
                                         heartRateApp,
-                                        fs,
+                                    fs,
                                         touchHandler,
                                         buttonHandler);
 
