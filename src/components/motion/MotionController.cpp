@@ -24,26 +24,25 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
 }
 
 bool MotionController::ShouldRaiseWake() const {
-  if (x < -raiseWakeXThresh || x > raiseWakeXThresh || y > raiseWakeYThresh) {
+  constexpr int16_t xThresh = 512;
+  constexpr int16_t yThresh = 0;
+  constexpr int16_t ySwitchThresh = -768;
+  constexpr int16_t requiredSpeed = 256;
+
+  if (x < -xThresh || x > xThresh || y > yThresh) {
     return false;
   }
 
-  if (std::abs(y) > std::abs(z)) {
-    if (deltaZ < raiseWakeSpeed) {
-      return false;
-    }
-    return true;
+  // Use z here because it's not possible to accurately detect movement between around y == -768 and y == -1024
+  // y can't be used in this range because it needs more movement for the values to change the same amount
+  // It also can't be used because it's possible that y can wrap around but not have a meaningful value in deltaY
+  if (y < ySwitchThresh) {
+    return deltaZ > requiredSpeed;
   }
-  if (z < 0) {
-    if (deltaY > -raiseWakeSpeed) {
-      return false;
-    }
-    return true;
+  if (z > 0) {
+    return deltaY > requiredSpeed + y / 8;
   }
-  if (deltaY < raiseWakeSpeed) {
-    return false;
-  }
-  return true;
+  return deltaY < -requiredSpeed - y / 8;
 }
 
 bool MotionController::Should_ShakeWake(uint16_t thresh) {

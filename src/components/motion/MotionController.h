@@ -72,9 +72,6 @@ namespace Pinetime {
       int16_t z = 0;
       int16_t deltaY = 0;
       int16_t deltaZ = 0;
-      const int16_t raiseWakeXThresh = 512;
-      const int16_t raiseWakeYThresh = 0;
-      const int16_t raiseWakeSpeed = 192;
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
       Pinetime::Controllers::MotionService* service = nullptr;
