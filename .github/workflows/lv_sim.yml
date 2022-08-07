@@ -4,7 +4,7 @@ name: Build PineTime LVGL Simulator
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ master, develop, rain_mode_test ]
     paths-ignore:
       - 'doc/**'
       - 'images/**'
