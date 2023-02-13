@@ -1,6 +1,34 @@
 #include "components/motion/MotionController.h"
-#include "os/os_cputime.h"
+
+#include <task.h>
+
 using namespace Pinetime::Controllers;
+
+namespace {
+  // approximation of 1024*sin(x) between -45 and 45 degrees
+  constexpr int16_t DegreesToAccel(int16_t degrees) {
+    // if (degrees < -30) {
+    //   return degrees * 12 - 180;
+    // }
+    // if (degrees > 30) {
+    //   return degrees * 12 + 180;
+    // }
+    // return degrees * 18;
+    return degrees * 17;
+  }
+
+  // approximation of asin(x/1024) between -45 and 45 degrees
+  constexpr int16_t AccelToDegrees(int16_t accel) {
+    // if (accel < -540) {
+    //   return accel / 12 + 15;
+    // }
+    // if (accel > 540) {
+    //   return accel / 12 - 15;
+    // }
+    // return accel / 18;
+    return accel / 17;
+  }
+}
 
 void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
   if (this->nbSteps != nbSteps && service != nullptr) {
@@ -11,10 +39,13 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
     service->OnNewMotionValues(x, y, z);
   }
 
-  deltaY = y - this->y;
-  deltaZ = z - this->z;
+  lastTime = time;
+  time = xTaskGetTickCount();
+
   this->x = x;
+  lastY = this->y;
   this->y = y;
+  lastZ = this->z;
   this->z = z;
   int32_t deltaSteps = nbSteps - this->nbSteps;
   this->nbSteps = nbSteps;
@@ -23,54 +54,34 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   }
 }
 
-bool MotionController::ShouldRaiseWake() const {
-  constexpr int16_t ySwitchThresh = -768;
-  constexpr int16_t speedModifier = 8;
-  constexpr int16_t xThresh = 512;
-  constexpr int16_t yThresh = 0;
-  constexpr int16_t requiredSpeed = 256;
+int16_t MotionController::DegreesRolled() const {
+  if (y < DegreesToAccel(-45)) {
+    if (lastY < DegreesToAccel(-45)) {
+      return AccelToDegrees(z) - AccelToDegrees(lastZ);
+    }
 
-  if (x < -xThresh || x > xThresh || y > yThresh) {
+    return AccelToDegrees(lastY) + AccelToDegrees(z) + 90;
+  }
+
+  return AccelToDegrees(lastY) - AccelToDegrees(y);
+}
+
+bool MotionController::ShouldRaiseWake() const {
+  if (x < DegreesToAccel(-22) || x > DegreesToAccel(22) || y > DegreesToAccel(-8) || z > DegreesToAccel(45)) {
     return false;
   }
 
-  // Use z here because more computationally intensive maths would be necessary to accurately detect movement for y < -768
-  if (y < ySwitchThresh) {
-    return deltaZ > requiredSpeed;
-  }
-  // y / 8 is an approximation of 2 * asin(y / 1024) that is reasonably accurate for -768 < y < 768
-  // y - deltaY / 2 is halfway between the previous y value and the current one
-  if (z > 0) {
-    return deltaY > requiredSpeed + (y - deltaY / 2) / speedModifier;
-  }
-  return deltaY < -requiredSpeed - (y - deltaY / 2) / speedModifier;
+  return DegreesRolled() > static_cast<int16_t>(time - lastTime) / 6;
 }
 
-bool MotionController::Should_ShakeWake(uint16_t thresh) {
-  bool wake = false;
-  auto diff = xTaskGetTickCount() - lastShakeTime;
-  lastShakeTime = xTaskGetTickCount();
+bool MotionController::ShouldShakeWake(uint16_t thresh) {
   /* Currently Polling at 10hz, If this ever goes faster scalar and EMA might need adjusting */
-  int32_t speed = std::abs(z + (y / 2) + (x / 4) - lastYForShake - lastZForShake) / diff * 100;
-  //(.2 * speed) + ((1 - .2) * accumulatedspeed);
+  int32_t speed = std::abs(z + (y / 2) + (x / 4) - lastY / 2 - lastZ) / (time - lastTime) * 100;
+  //(.2 * speed) + ((1 - .2) * accumulatedSpeed);
   // implemented without floats as .25Alpha
-  accumulatedspeed = (speed / 5) + ((accumulatedspeed / 5) * 4);
+  accumulatedSpeed = (speed / 5) + ((accumulatedSpeed / 5) * 4);
 
-  if (accumulatedspeed > thresh) {
-    wake = true;
-  }
-  lastXForShake = x / 4;
-  lastYForShake = y / 2;
-  lastZForShake = z;
-  return wake;
-}
-
-int32_t MotionController::currentShakeSpeed() {
-  return accumulatedspeed;
-}
-
-void MotionController::IsSensorOk(bool isOk) {
-  isSensorOk = isOk;
+  return accumulatedSpeed > thresh;
 }
 
 void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {

@@ -1,8 +1,11 @@
 #pragma once
 
 #include <cstdint>
-#include <drivers/Bma421.h>
-#include <components/ble/MotionService.h>
+
+#include <FreeRTOS.h>
+
+#include "drivers/Bma421.h"
+#include "components/ble/MotionService.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -28,14 +31,6 @@ namespace Pinetime {
         return z;
       }
 
-      int16_t DeltaY() const {
-        return deltaY;
-      }
-
-      int16_t DeltaZ() const {
-        return deltaZ;
-      }
-
       uint32_t NbSteps() const {
         return nbSteps;
       }
@@ -49,9 +44,15 @@ namespace Pinetime {
       }
 
       bool ShouldRaiseWake() const;
-      bool Should_ShakeWake(uint16_t thresh);
-      int32_t currentShakeSpeed();
-      void IsSensorOk(bool isOk);
+      bool ShouldShakeWake(uint16_t thresh);
+
+      int32_t CurrentShakeSpeed() const {
+        return accumulatedSpeed;
+      }
+
+      void IsSensorOk(bool isOk) {
+        isSensorOk = isOk;
+      }
 
       bool IsSensorOk() const {
         return isSensorOk;
@@ -65,21 +66,23 @@ namespace Pinetime {
       void SetService(Pinetime::Controllers::MotionService* service);
 
     private:
-      uint32_t nbSteps;
+      uint32_t nbSteps = 0;
       uint32_t currentTripSteps = 0;
+
+      TickType_t lastTime = 0;
+      TickType_t time = 0;
       int16_t x = 0;
+      int16_t lastY = 0;
       int16_t y = 0;
+      int16_t lastZ = 0;
       int16_t z = 0;
-      int16_t deltaY = 0;
-      int16_t deltaZ = 0;
+      int16_t DegreesRolled() const;
+
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
       Pinetime::Controllers::MotionService* service = nullptr;
 
-      int16_t lastXForShake = 0;
-      int16_t lastYForShake = 0;
-      int16_t lastZForShake = 0;
-      int32_t accumulatedspeed = 0;
+      int32_t accumulatedSpeed = 0;
       uint32_t lastShakeTime = 0;
     };
   }
