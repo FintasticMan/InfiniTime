@@ -76,7 +76,7 @@ namespace Pinetime {
       int16_t y = 0;
       int16_t lastZ = 0;
       int16_t z = 0;
-      int16_t DegreesRolled() const;
+      int16_t AmountRolled() const;
 
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
