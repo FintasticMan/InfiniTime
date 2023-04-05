@@ -30,6 +30,7 @@
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
 #include "displayapp/screens/Weather.h"
+#include "displayapp/screens/Calculator.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -547,6 +548,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     */
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
+      break;
+    case Apps::Calculator:
+      currentScreen = std::make_unique<Screens::Calculator>();
       break;
   }
   currentApp = app;
