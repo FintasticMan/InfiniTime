@@ -110,7 +110,7 @@ bool MotionController::ShouldShakeWake(uint16_t thresh) {
     std::abs(zHistory[0] - zHistory[histSize - 1] + (yHistory[0] / 2) - (yHistory[histSize - 1] / 2) + (x / 4) - (lastX / 4)) /
     (time - lastTime) * 100;
   //(.2 * speed) + ((1 - .2) * accumulatedSpeed);
-  accumulatedSpeed = (speed / 5) + ((accumulatedSpeed / 5) * 4);
+  accumulatedSpeed = (speed / 5) + ((accumulatedSpeed * 4) / 5);
 
   return accumulatedSpeed > thresh;
 }
