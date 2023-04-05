@@ -5,6 +5,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "utility/CircularBuffer.h"
+
 namespace Pinetime {
   namespace Controllers {
     class NotificationManager {
@@ -61,14 +63,10 @@ namespace Pinetime {
     private:
       Notification::Id nextId {0};
       Notification::Id GetNextId();
-      const Notification& At(Notification::Idx idx) const;
-      Notification& At(Notification::Idx idx);
       void DismissIdx(Notification::Idx idx);
 
-      static constexpr uint8_t TotalNbNotifications = 5;
-      std::array<Notification, TotalNbNotifications> notifications;
-      size_t beginIdx = TotalNbNotifications - 1; // index of the newest notification
-      size_t size = 0;                            // number of valid notifications in buffer
+      Utility::CircularBuffer<Notification, 5> notifications;
+      size_t size = 0; // number of valid notifications in buffer
 
       std::atomic<bool> newNotification {false};
     };
