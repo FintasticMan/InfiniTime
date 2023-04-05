@@ -426,6 +426,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingChimes.cpp
         displayapp/screens/settings/SettingShakeThreshold.cpp
         displayapp/screens/settings/SettingBluetooth.cpp
+        displayapp/screens/settings/SettingActivity.cpp
 
         ## Watch faces
         displayapp/icons/bg_clock.c
@@ -455,6 +456,7 @@ list(APPEND SOURCE_FILES
         components/datetime/DateTimeController.cpp
         components/brightness/BrightnessController.cpp
         components/motion/MotionController.cpp
+        components/activity/ActivityController.cpp
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
@@ -522,6 +524,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/datetime/DateTimeController.cpp
         components/brightness/BrightnessController.cpp
         components/motion/MotionController.cpp
+        components/activity/ActivityController.cpp
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
@@ -641,6 +644,7 @@ set(INCLUDE_FILES
         components/datetime/DateTimeController.h
         components/brightness/BrightnessController.h
         components/motion/MotionController.h
+        components/activity/ActivityController.h
         components/firmwarevalidator/FirmwareValidator.h
         components/ble/BleController.h
         components/ble/NotificationManager.h
