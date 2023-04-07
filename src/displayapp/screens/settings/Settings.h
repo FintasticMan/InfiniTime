@@ -47,8 +47,8 @@ namespace Pinetime {
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           {Symbols::shoe, "Activity", Apps::SettingActivity},
 
+          {Symbols::clock, "Auto Sleep", Apps::SettingAutoSleep},
           {Symbols::list, "About", Apps::SysInfo},
-          {Symbols::none, "None", Apps::None},
           {Symbols::none, "None", Apps::None},
           {Symbols::none, "None", Apps::None},
         }};
