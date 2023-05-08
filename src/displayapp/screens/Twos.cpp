@@ -241,8 +241,8 @@ void Twos::updateGridDisplay() {
     const unsigned int row = i / nCols;
     const unsigned int col = i % nCols;
     if (grid[row][col].value > 0) {
-      char buffer[7];
-      sprintf(buffer, "%d", grid[row][col].value);
+      char buffer[11];
+      sprintf(buffer, "%u", grid[row][col].value);
       lv_table_set_cell_value(gridDisplay, row, col, buffer);
     } else {
       lv_table_set_cell_value(gridDisplay, row, col, "");

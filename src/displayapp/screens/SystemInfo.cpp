@@ -179,6 +179,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
 
 extern int mallocFailedCount;
 extern int stackOverflowCount;
+
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
   lv_mem_monitor_t mon;
   lv_mem_monitor(&mon);
@@ -236,7 +237,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   auto nb = uxTaskGetSystemState(tasksStatus, maxTaskCount, nullptr);
   std::sort(tasksStatus, tasksStatus + nb, sortById);
   for (uint8_t i = 0; i < nb && i < maxTaskCount; i++) {
-    char buffer[7] = {0};
+    char buffer[11] = {0};
 
     sprintf(buffer, "%lu", tasksStatus[i].xTaskNumber);
     lv_table_set_cell_value(infoTask, i + 1, 0, buffer);
@@ -262,9 +263,9 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
     lv_table_set_cell_value(infoTask, i + 1, 1, buffer);
     lv_table_set_cell_value(infoTask, i + 1, 2, tasksStatus[i].pcTaskName);
     if (tasksStatus[i].usStackHighWaterMark < 20) {
-      sprintf(buffer, "%d low", tasksStatus[i].usStackHighWaterMark);
+      sprintf(buffer, "%" PRIu16 " low", tasksStatus[i].usStackHighWaterMark);
     } else {
-      sprintf(buffer, "%d", tasksStatus[i].usStackHighWaterMark);
+      sprintf(buffer, "%" PRIu16, tasksStatus[i].usStackHighWaterMark);
     }
     lv_table_set_cell_value(infoTask, i + 1, 3, buffer);
   }

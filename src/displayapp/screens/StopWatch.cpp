@@ -198,9 +198,9 @@ void StopWatch::stopLapBtnEventHandler() {
         continue;
       }
       TimeSeparated_t times = convertTicksToTimeSegments(laps[i]);
-      char buffer[16];
+      char buffer[17];
       if (times.hours == 0) {
-        sprintf(buffer, "#%2d   %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
+        sprintf(buffer, "#%2d    %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
       } else {
         sprintf(buffer, "#%2d %2d:%02d:%02d.%02d\n", i + 1, times.hours, times.mins, times.secs, times.hundredths);
       }
