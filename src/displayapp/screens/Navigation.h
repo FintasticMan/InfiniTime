@@ -24,6 +24,8 @@
 #include <array>
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
+#include "systemtask/SystemTask.h"
+#include "systemtask/WakeLock.h"
 #include "Symbols.h"
 
 namespace Pinetime {
@@ -36,7 +38,7 @@ namespace Pinetime {
     namespace Screens {
       class Navigation : public Screen {
       public:
-        explicit Navigation(Pinetime::Controllers::NavigationService& nav);
+        explicit Navigation(System::SystemTask& systemTask, Pinetime::Controllers::NavigationService& nav);
         ~Navigation() override;
 
         void Refresh() override;
@@ -48,6 +50,7 @@ namespace Pinetime {
         lv_obj_t* txtManDist;
         lv_obj_t* barProgress;
 
+        Pinetime::System::WakeLock wakeLock;
         Pinetime::Controllers::NavigationService& navService;
 
         std::string flag;
@@ -65,7 +68,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::map;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Navigation(*controllers.navigationService);
+        return new Screens::Navigation(*controllers.systemTask, *controllers.navigationService);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {

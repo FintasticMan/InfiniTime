@@ -190,7 +190,8 @@ namespace {
  * Navigation watchapp
  *
  */
-Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navService(nav) {
+Navigation::Navigation(System::SystemTask& systemTask, Pinetime::Controllers::NavigationService& nav)
+  : wakeLock(systemTask), navService(nav) {
   const auto& image = GetIcon("flag");
   imgFlag = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_auto_size(imgFlag, false);
@@ -230,6 +231,8 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
   lv_bar_set_value(barProgress, 0, LV_ANIM_OFF);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+
+  wakeLock.Lock();
 }
 
 Navigation::~Navigation() {
